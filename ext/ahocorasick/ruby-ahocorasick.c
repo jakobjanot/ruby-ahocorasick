@@ -58,8 +58,9 @@ static VALUE
 rb_rf_valid(int argc, VALUE *argv, VALUE self) {
   VALUE result;
   VALUE remain;
-  rb_scan_args(argc, argv, "20", &result, &remain);
-  rb_raise(rb_eNotImpError, "Method AhoCorasick::ResultFilter.valid?(<Hash> result, <String> remain) should be implemented in child classes.");
+  VALUE scanned;
+  rb_scan_args(argc, argv, "20", &result, &remain, &scanned);
+  rb_raise(rb_eNotImpError, "Method AhoCorasick::ResultFilter.valid?(<Hash> result, <String> remain, <String> scanned) should be implemented in child classes.");
   return Qtrue;
 }
 
@@ -152,6 +153,7 @@ static VALUE
 rb_kwt_find_all(int argc, VALUE *argv, VALUE self)
 {
   char * remain;        // returned by ac_search, the remaing text to search
+  VALUE scanned;       // the text that has been been searched, 
   int lgt, id, ends_at; // filled in by ac_search: the length of the result, the id, and starts_at/ends_at position
   VALUE v_result;  // one result, as hash
   VALUE v_results; // all the results, an array
@@ -185,13 +187,15 @@ rb_kwt_find_all(int argc, VALUE *argv, VALUE self)
   filter= rb_iv_get(self, "@filter");
   // loop trought the results
   while((remain= ac_search(kwt_data->tree, &lgt, &id, &ends_at)) != NULL) {
+      
+    scanned= rb_str_substr(v_search, 0, ends_at - lgt - 1);
     // this is an individual result as a hash
     v_result= rb_hash_new();
     rb_hash_aset( v_result, sym_id,        INT2NUM( (long)id ) );
     rb_hash_aset( v_result, sym_starts_at, INT2NUM( (long)(ends_at - lgt - 1) ) );
     rb_hash_aset( v_result, sym_ends_at,   INT2NUM( (long)(ends_at - 1) ) );
     rb_hash_aset( v_result, sym_value, rb_str_new(remain, (long)lgt) );
-    if (filter == Qnil || rb_funcall( filter, rb_intern("valid?"), 2, v_result, rb_str_new(remain, (long)strlen(remain)) )!=Qfalse)
+    if (filter == Qnil || rb_funcall( filter, rb_intern("valid?"), 2, v_result, rb_str_new(remain, (long)strlen(remain)), scanned )!=Qfalse)
       rb_ary_push( v_results, v_result );
   }
   // reopen the tree
