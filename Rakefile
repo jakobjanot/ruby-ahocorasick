@@ -1,11 +1,11 @@
 require 'rubygems'
 require 'rake'
-require 'rake/gempackagetask'
-require 'spec/rake/spectask'
+require 'rake/packagetask'
+require 'rspec/core/rake_task'
 
 load File.join(File.dirname(__FILE__), 'ruby-ahocorasick.gemspec')
 
-pt = Rake::GemPackageTask.new(GEMSPEC) do |p|
+pt = Rake::PackageTask.new(GEMSPEC,GEM_VERSION) do |p|
   p.need_tar = true
   p.need_zip = true
 end
@@ -38,8 +38,8 @@ task :clean do
 end
 
 desc "Run rspec"
-Spec::Rake::SpecTask.new(:spec) do |t|
-  t.spec_opts = ["-c"]
-  t.spec_files = FileList['spec/**/*_spec.rb']
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.rspec_opts = ["-c","--backtrace"]
+  t.pattern = FileList['spec/**/*_spec.rb']
 end
 

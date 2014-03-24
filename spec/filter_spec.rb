@@ -12,7 +12,7 @@ end
 
 class DiscriminatorFilter < ResultFilter
 
-  def valid?(result, remain)
+  def valid?(result, remain, scanned)
     result[:value] == "foo"
   end
 
@@ -20,9 +20,17 @@ end
 
 class PlayWithRemain < ResultFilter
 
-  def valid?(result, remain)
+  def valid?(result, remain, scanned)
     remain= "gg"
     true
+  end
+
+end
+
+class HasANotBefore < ResultFilter
+
+  def valid?(result, remain, scanned)
+    scanned.last == "not "
   end
 
 end
@@ -37,7 +45,7 @@ describe ResultFilter do
   it "should raise NotImplementedError when the filter is not implementing valid?" do
     k= KeywordTree.new
     k.filter= Foo.new
-    lambda{k.filter.valid?("qq", {})}.should raise_error(NotImplementedError)
+    lambda{k.filter.valid?("qq", "qq", {})}.should raise_error(NotImplementedError)
   end
 
   it "should filter the results" do
@@ -59,5 +67,14 @@ describe ResultFilter do
     results.size.should == 2
   end
 
+  it "should filter starting with a 'not'" do
+    k= KeywordTree.new
+    k.add_string "to be"
+    k.filter= DiscriminatorFilter.new
+    results= k.find_all("to be or not to be is the question")
+    #results.size.should == 1
+    results[0][:value].should == "be"
+    results[0][:starts_at].should == 13
+  end
 end
 

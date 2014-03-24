@@ -50,7 +50,7 @@ rb_rf_init(VALUE self) {
 }
 
 /*
- * call-seq: valid?(result, string)
+ * call-seq: valid?(result, string, string)
  *
  * Only defines the signature for this method.
  */ 
@@ -59,7 +59,7 @@ rb_rf_valid(int argc, VALUE *argv, VALUE self) {
   VALUE result;
   VALUE remain;
   VALUE scanned;
-  rb_scan_args(argc, argv, "20", &result, &remain, &scanned);
+  rb_scan_args(argc, argv, "30", &result, &remain, &scanned);
   rb_raise(rb_eNotImpError, "Method AhoCorasick::ResultFilter.valid?(<Hash> result, <String> remain, <String> scanned) should be implemented in child classes.");
   return Qtrue;
 }
@@ -195,7 +195,7 @@ rb_kwt_find_all(int argc, VALUE *argv, VALUE self)
     rb_hash_aset( v_result, sym_starts_at, INT2NUM( (long)(ends_at - lgt - 1) ) );
     rb_hash_aset( v_result, sym_ends_at,   INT2NUM( (long)(ends_at - 1) ) );
     rb_hash_aset( v_result, sym_value, rb_str_new(remain, (long)lgt) );
-    if (filter == Qnil || rb_funcall( filter, rb_intern("valid?"), 2, v_result, rb_str_new(remain, (long)strlen(remain)), scanned )!=Qfalse)
+    if (filter == Qnil || rb_funcall( filter, rb_intern("valid?"), 3, v_result, rb_str_new(remain, (long)strlen(remain)), scanned )!=Qfalse)
       rb_ary_push( v_results, v_result );
   }
   // reopen the tree
