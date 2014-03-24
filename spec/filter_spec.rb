@@ -30,7 +30,7 @@ end
 class HasANotBefore < ResultFilter
 
   def valid?(result, remain, scanned)
-    scanned.last == "not "
+    (scanned[-4,4] == "not ")
   end
 
 end
@@ -70,10 +70,10 @@ describe ResultFilter do
   it "should filter starting with a 'not'" do
     k= KeywordTree.new
     k.add_string "to be"
-    k.filter= DiscriminatorFilter.new
+    k.filter= HasANotBefore.new
     results= k.find_all("to be or not to be is the question")
-    #results.size.should == 1
-    results[0][:value].should == "be"
+    results.size.should == 1
+    results[0][:value].should == "to be"
     results[0][:starts_at].should == 13
   end
 end

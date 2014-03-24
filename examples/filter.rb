@@ -21,7 +21,7 @@ end
 class  Baz < ResultFilter
 
   # note that it returns false. always
-  def valid?(result, remain)
+  def valid?(result, remain, scanned)
     puts "==> result: #{result.inspect} [#{result.class.name}]"
     puts "==> remain: #{remain} [#{remain.class.name}]"
     false
@@ -32,7 +32,7 @@ k = KeywordTree.new
 k.filter= Bar.new
 puts "==> is valid? defined got #{k.filter.respond_to?("valid?")}"
 begin
-  k.filter.valid?("ss", {:foo=>"bar"})
+  k.filter.valid?("ss", {:foo=>"bar"}, "ss")
 rescue NotImplementedError => error
   puts "==> call valid? got #{error}"
 end
