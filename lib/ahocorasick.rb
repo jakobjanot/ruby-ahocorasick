@@ -2,7 +2,6 @@
 require 'ahocorasick/native'
 
 module AhoCorasick
-  VERSION='0.6.2'
   
   class KeywordTree
 
