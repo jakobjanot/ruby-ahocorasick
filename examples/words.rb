@@ -28,7 +28,7 @@ class  WordFilter < ResultFilter
   end
 
   # check if it's valid
-  def valid?(result, remain)
+  def valid?(result, remain, scanned)
     @separators.include?(remain[result[:ends_at]-result[:starts_at]])
   end
 end
